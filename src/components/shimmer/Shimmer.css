@@ -1,0 +1,172 @@
+/* Base shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  display: inline-block;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+/* Card Shimmer Styles */
+.card-shimmer {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0px 0px 3px 1px rgba(192, 192, 192, 0.90);
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shimmer-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.shimmer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* Chart Shimmer Styles */
+.chart-shimmer {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  min-height: 300px;
+}
+
+.shimmer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.shimmer-chart-area {
+  width: 100%;
+}
+
+/* Doughnut Shimmer Styles */
+.doughnut-shimmer {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.doughnut-shimmer .shimmer-header {
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.shimmer-stats {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.shimmer-doughnut {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+/* Line Chart Shimmer Styles */
+.line-chart-shimmer {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  min-height: 350px;
+}
+
+.line-chart-shimmer .shimmer-header {
+  margin-bottom: 20px;
+}
+
+.shimmer-chart {
+  margin-bottom: 15px;
+}
+
+.shimmer-footer {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card-shimmer {
+    height: 150px;
+    padding: 15px;
+  }
+  
+  .shimmer-content {
+    gap: 15px;
+  }
+  
+  .doughnut-shimmer {
+    width: 100%;
+    min-height: 300px;
+  }
+  
+  .line-chart-shimmer {
+    min-height: 300px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .shimmer {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  }
+  
+  .card-shimmer,
+  .chart-shimmer,
+  .doughnut-shimmer,
+  .line-chart-shimmer {
+    background: #1a1a1a;
+    box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .shimmer {
+    background: linear-gradient(90deg, #000 25%, #333 50%, #000 75%);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+    background: #e0e0e0;
+  }
+}
