@@ -1,0 +1,119 @@
+.logoText {
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    background: #fff;
+}
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem; /* Equivalent to px-3 and py-3 */
+    background-color: #98004c;
+}
+.navBar {
+    width: 100%;
+    background-color: #98004c;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Makes it responsive */
+    gap: 15px;
+  }
+  
+  .logoButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .logo {
+    width: 120px;
+    height: 25px;
+  }
+  
+  .userInfo {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 15px;
+    text-align: left;
+    flex-wrap: wrap;
+  }
+  
+  .userName,
+  .userEmail,
+  .dateTime {
+    margin: 0;
+  }
+  
+  .userName {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  .userEmail {
+    font-size: 1em;
+  }
+  
+  .dateTime {
+    font-size: 1rem;
+    /* font-style: italic; */
+  }
+  
+  /* Responsive Design */
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      flex-direction: column; /* Stack elements vertically on smaller screens */
+      align-items: center;
+    }
+  
+    .userInfo {
+      align-items: center;
+      text-align: center;
+    }
+  
+    .logo {
+      width: 100px; /* Adjust logo size for smaller screens */
+      height: auto;
+    }
+  
+    .userName {
+      font-size: 1em;
+    }
+  
+    .userEmail {
+      font-size: 0.9em;
+    }
+  
+    .dateTime {
+      font-size: 0.8em;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .logo {
+      width: 80px; /* Smaller logo for very small screens */
+    }
+  
+    .userName,
+    .userEmail,
+    .dateTime {
+      font-size: 0.8em;
+    }
+  }
+  
+/*  */

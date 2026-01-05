@@ -1,0 +1,35 @@
+.addPatienBtn {
+    outline: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500; /* Equivalent to font-medium */
+    font-size: 0.875rem; /* Equivalent to text-sm */
+    border-radius: 9999px; /* Rounded full */
+    padding: 0.625rem 1.25rem; /* Equivalent to px-5 py-2.5 */
+    text-align: center;
+    margin-right: 0.5rem; /* Equivalent to mr-2 */
+    margin-bottom: 0.5rem; /* Equivalent to mb-2 */
+    background-color: #1a4e85; /* Equivalent to bg-blue-600 */
+    color: #ffffff; /* Text color */
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: #ffffff;
+    color: rgb(152, 0, 76);
+    box-shadow: 0px 0px 10px #00000029
+}
+
+.addPatienBtn:hover {
+    background-color: rgb(152, 0, 76); /* Equivalent to hover:bg-blue-700 */
+    color:#ffffff
+}
+
+.addPatienBtn:focus {
+    box-shadow: rgb(152, 0, 76); /* Equivalent to focus:ring-4 and focus:ring-blue-300 */
+    color:#ffffff
+
+}
+
+.addPatienBtn:focus:hover {
+    background-color: rgb(152, 0, 76); /* Equivalent to :focus:ring-blue-800 */
+    color:#ffffff
+
+}
