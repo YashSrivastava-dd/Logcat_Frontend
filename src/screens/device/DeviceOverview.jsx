@@ -58,6 +58,9 @@ function DeviceOverview() {
   const isLocked = overviewData?.isLocked;
   const lockedStatus = overviewData?.lockedStatus;
   const paymentDoneInPercent = overviewData?.paymentDoneInPercent;
+
+  // Optimistic UI state for lock/unlock
+  const [optimisticLockStatus, setOptimisticLockStatus] = useState(null);
   const alertHandel = (e) => {
     e.preventDefault()
     toast.error("Device Inactive");
@@ -114,32 +117,105 @@ function DeviceOverview() {
       history(`/device?code=${code}&name=${projectName}&page=${page}`);
     }
   };
+  // Resolve current lock state with priority: optimisticLockStatus || lockedStatus || (isLocked ? "Locked" : "Unlocked")
+  const getCurrentStatus = () => {
+    if (optimisticLockStatus) return optimisticLockStatus;
+    if (lockedStatus) return lockedStatus;
+    return isLocked ? "Locked" : "Unlocked";
+  };
+
+  // Clear optimistic state only when backend returns a final state (Locked/Unlocked)
+  // Keep optimistic state if backend returns pending states
+  useEffect(() => {
+    if (lockedStatus && (lockedStatus === "Locked" || lockedStatus === "Unlocked")) {
+      setOptimisticLockStatus(null);
+    }
+  }, [lockedStatus]);
+
   console.log('deviceID', deviceid)
-  const handelLock = () => {
-
+  const handelLock = async () => {
     const socket = socketRef.current;
+    const currentState = getCurrentStatus();
+    let email = "masoom@agvahealthtech.com";
+    let nextState = null;
+    let isLockedValue = null;
+    let isPaymentDoneValue = null;
 
-    // if (socket) {
-    //   // socket.emit('DeviceRequestForPaymentStatus', deviceid);
-    //   // console.log('socket', socket);
+    // State machine logic
+    switch (currentState) {
+      case "Locked":
+        // Send UNLOCK request
+        nextState = "Unlock Pending";
+        isLockedValue = false;
+        isPaymentDoneValue = "true";
+        toast.success("Device unlock request has been sent successfully");
+        break;
+      
+      case "Unlock Pending":
+        // Send LOCK request
+        nextState = "Lock Pending";
+        isLockedValue = true;
+        isPaymentDoneValue = "false";
+        toast.success("Device lock request has been sent successfully");
+        break;
+      
+      case "Unlocked":
+        // Send LOCK request
+        nextState = "Lock Pending";
+        isLockedValue = true;
+        isPaymentDoneValue = "false";
+        toast.success("Device lock request has been sent successfully");
+        break;
+      
+      case "Lock Pending":
+        // Send UNLOCK request
+        nextState = "Unlock Pending";
+        isLockedValue = false;
+        isPaymentDoneValue = "true";
+        toast.success("Device unlock request has been sent successfully");
+        break;
+      
+      default:
+        // Fallback: determine from isLocked
+        if (isLocked) {
+          nextState = "Unlock Pending";
+          isLockedValue = false;
+          isPaymentDoneValue = "true";
+          toast.success("Device unlock request has been sent successfully");
+        } else {
+          nextState = "Lock Pending";
+          isLockedValue = true;
+          isPaymentDoneValue = "false";
+          toast.success("Device lock request has been sent successfully");
+        }
+    }
 
-    //   // 🔌 Disconnect after 10 seconds
-    //   setTimeout(() => {
-    //     socket.disconnect();
-    //     console.log('Socket disconnected after 10 seconds');
-    //   }, 10000);
-    // } else {
-    //   console.log('Socket not connected');
-    // }
-    let email = "masoom@agvahealthtech.com"
-    if (isPaymentComplete === "true") {
-      dispatch(
-        postLockToDeviceIdAction({ DeviceId: deviceid, isPaymentDone: "false", isLocked: true, email , socket: socketRef.current})
+    // Optimistic UI update - immediately switch to pending state
+    setOptimisticLockStatus(nextState);
+
+    try {
+      // Send request to backend with lockedStatus to persist the pending state
+      await dispatch(
+        postLockToDeviceIdAction({
+          DeviceId: deviceid,
+          isPaymentDone: isPaymentDoneValue,
+          isLocked: isLockedValue,
+          lockedStatus: nextState, // Persist the pending state to backend
+          email,
+          socket: socketRef.current
+        })
       );
-    } else {
-      dispatch(
-        postLockToDeviceIdAction({ DeviceId: deviceid, isPaymentDone: "true", isLocked: false, email, socket: socketRef.current })
-      );
+
+      // Refresh device data after backend response to get final state
+      setTimeout(() => {
+        dispatch(getSingleDeviceIdDetails(deviceid, code));
+      }, 500);
+    } catch (error) {
+      // On error, clear optimistic state to revert to actual state
+      setOptimisticLockStatus(null);
+      toast.error("Failed to update device lock status");
+      // Refresh device data to get actual state
+      dispatch(getSingleDeviceIdDetails(deviceid, code));
     }
   };
   //  otp handel validation
@@ -496,41 +572,60 @@ function DeviceOverview() {
             )}
             {adminProfile==="Super-Admin" ? (
               <button
-                style={isLocked === true ? {
-                  justifyContent: "space-around",
-                  background: "green 0% 0% no-repeat padding-box",
-                  boxShadow: "0px 0px 50px #00000029",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "15px",
-                  width: "13rem",
-                  borderRadius: "10px",
-                  color: "#fff",
-                  textAlign: "center",
-                } : {
-                  background: "#fff 0% 0% no-repeat padding-box",
-                  boxShadow: "0px 0px 50px #00000029",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "15px",
-                  width: "13rem",
-                  justifyContent: 'center',
-                  borderRadius: '10px'
-                }}
+                style={(() => {
+                  const status = getCurrentStatus();
+                  
+                  const buttonStyle = {
+                    justifyContent: "space-around",
+                    boxShadow: "0px 0px 50px #00000029",
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "15px",
+                    width: "13rem",
+                    borderRadius: "10px",
+                    border: "0px",
+                    cursor: "pointer",
+                    textAlign: "center",
+                  };
+
+                  let finalStyle = {};
+
+                  if (status === "Locked") {
+                    finalStyle = {
+                      ...buttonStyle,
+                      background: "#ff0000",   // 🔴 Red
+                      color: "#ffffff",
+                    };
+                  }
+                  else if (status === "Unlocked") {
+                    finalStyle = {
+                      ...buttonStyle,
+                      background: "#00a651",   // 🟢 Green
+                      color: "#ffffff",
+                    };
+                  }
+                  else if (status === "Lock Pending" || status === "Unlock Pending") {
+                    finalStyle = {
+                      ...buttonStyle,
+                      background: "#FFBF00",   // 🟡 Amber
+                      color: "#000000",        // Black text
+                      fontWeight: "600",
+                    };
+                  }
+                  else {
+                    // Fallback style
+                    finalStyle = {
+                      ...buttonStyle,
+                      background: "#fff",
+                      color: "#707070",
+                    };
+                  }
+
+                  return finalStyle;
+                })()}
                 onClick={handelLock}
               >
-                {lockedStatus}
-                {/* {isPaymentComplete==="true" ? (
-                  <h6 style={{ display: 'flex', justifyContent: 'space-between', gap: "5px" }}>
-                    Unlocked
-                    <FaLockOpen />
-                  </h6>
-                ) : (
-                  <h6 style={{ display: 'flex', justifyContent: 'space-between', gap: "5px" }}>
-                    Locked
-                    <FaLock />
-                  </h6>
-                )} */}
+                {getCurrentStatus()}
               </button>
             ) : (
               ""

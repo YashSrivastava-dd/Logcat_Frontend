@@ -1460,7 +1460,7 @@ export const postEditAccountDetails =
   };
 
 export const postLockToDeviceIdAction =
-  ({ DeviceId, isPaymentDone, isLocked, email, socket }) =>
+  ({ DeviceId, isPaymentDone, isLocked, lockedStatus, email, socket }) =>
   async (dispatch) => {
     try {
       dispatch({
@@ -1475,10 +1475,13 @@ export const postLockToDeviceIdAction =
         },
       };
 
-      const { data } = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}/devices/payment-update-for-email?DeviceId=${DeviceId}&isPaymentDone=${isPaymentDone}&isLocked=${isLocked}`,
-        config
-      );
+      // Build URL with lockedStatus if provided
+      let url = `${process.env.REACT_APP_BASE_URL}/devices/payment-update-for-email?DeviceId=${DeviceId}&isPaymentDone=${isPaymentDone}&isLocked=${isLocked}`;
+      if (lockedStatus) {
+        url += `&lockedStatus=${encodeURIComponent(lockedStatus)}`;
+      }
+
+      const { data } = await axios.put(url, config);
 
       dispatch({
         type: POST_DEVICE_ID_FROM_LOCK_SUCCESS,
